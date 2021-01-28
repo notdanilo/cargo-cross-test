@@ -35,14 +35,17 @@ fn main() {
     let context: Context = std::env::args().into();
 
     if context != Context::Web {
-        Command::new("cargo")
+        let status = Command::new("cargo")
             .arg("test")
             .status()
             .expect("Failed to execute native test.");
+        if !status.success() {
+            std::process::exit(-1);
+        }
     }
 
     if context != Context::Native {
-        Command::new("rustup")
+        let status = Command::new("rustup")
             .arg("run")
             .arg("nightly")
             .arg("wasm-pack")
@@ -51,6 +54,9 @@ fn main() {
             .arg("--headless")
             .status()
             .expect("Failed to execute web test.");
+        if !status.success() {
+            std::process::exit(-1);
+        }
     }
 }
 
